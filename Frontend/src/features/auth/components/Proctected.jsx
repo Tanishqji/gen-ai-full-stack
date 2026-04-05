@@ -1,11 +1,11 @@
-import { useActionData } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
  const Protected = ({ children }) => {
 
-    const { user,loading } = useAuth(); 
-    const navigate = useNavigate();
+    const { user, loading } = useAuth();
 
     if(loading){
         return(<main> <h1>Loading...</h1> </main>)
@@ -13,15 +13,9 @@ import { Navigate } from "react-router-dom";
 
     if(!user){
         return <Navigate to="/login" />
-       // navigate("/login");
-       // return(<main> <h1>Unauthorized</h1> </main>)
     }
 
-    return (
-        <div>
-            Protected
-        </div>
-    )
+    return children;
 }
 
 export default Protected
