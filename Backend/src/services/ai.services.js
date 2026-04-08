@@ -39,6 +39,7 @@ presentationPlanSchema: z.object({
     focus: z.string(),describe:("The focus area for the presentation plan"),
     tasks: z.array(z.string()),describe:("The tasks to be completed in the presentation plan")
 }).describe("The presentation plan for the candidate"),
+title: z.string(),describe:("The title of the interview report"),
   
    
 })

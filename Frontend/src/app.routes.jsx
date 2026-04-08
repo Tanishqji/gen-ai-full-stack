@@ -10,7 +10,7 @@ import Protected from "./features/auth/components/Proctected";
 export const appRouter = createBrowserRouter([
     {
         path: "/",
-        element: <Protected><Home /></Protected>
+        element: <Home />
     },
     {
         path: "/login",
