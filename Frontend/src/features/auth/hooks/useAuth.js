@@ -9,10 +9,10 @@ export const useAuth = () => {
     const { user, setUser, loading, setLoading } = context;
 
 
-    const handleLogin = async (email, password) => {
+    const handleLogin = async ({email, password}) => {
         setLoading(true);
         try {
-            const userData = await loginUser(email, password);
+            const userData = await loginUser({email, password});
             setUser(userData);
         } catch (error) {
             console.error("Login failed", error);
@@ -21,10 +21,10 @@ export const useAuth = () => {
         }
     };
 
-    const handleRegister = async (username, email, password) => {
+    const handleRegister = async ({username, email, password}) => {
         setLoading(true);
         try {
-            const userData = await registerUser(username, email, password);
+            const userData = await registerUser({username, email, password});
             setUser(userData);
         } catch (error) {
             console.error("Registration failed", error);

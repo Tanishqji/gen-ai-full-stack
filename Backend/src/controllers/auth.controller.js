@@ -4,73 +4,79 @@ const jwt = require("jsonwebtoken")
 const BlacklistToken = require("../models/blacklist.model")
 
 async function registerUserController(req, res) {
-    const { username, email, password } = req.body
+    try {
+        const { username, email, password } = req.body
 
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: "all fields are required" })
-    }
-    const isUserAlreadyExist = await UserModel.findOne({
-        $or: [{ username }, { email }]
-    })
-    if (isUserAlreadyExist) {
-        return res.status(400).json({ message: "user already exist" })
-    }
-
-    const hash = await bcrypt.hash(password, 10)
-    const user = await UserModel.create({
-        username,
-        email,
-        password: hash
-    })
-
-    const token = jwt.sign(
-        { id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-    )
-
-    res.cookie("token", token)
-
-    res.status(201).json({
-        message: "user registered successfully",
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "all fields are required" })
         }
-    })
+        const isUserAlreadyExist = await UserModel.findOne({
+            $or: [{ username }, { email }]
+        })
+        if (isUserAlreadyExist) {
+            return res.status(400).json({ message: "user already exist" })
+        }
 
+        const hash = await bcrypt.hash(password, 10)
+        const user = await UserModel.create({
+            username,
+            email,
+            password: hash
+        })
+
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        )
+
+        res.cookie("token", token)
+
+        res.status(201).json({
+            message: "user registered successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        })
+    } catch (error) {
+        console.error("Register error:", error)
+        res.status(500).json({ message: "Internal server error", error: error.message })
+    }
 }
 
 async function loginUserController(req, res) {
-    const { email, password } = req.body
+    try {
+        const { email, password } = req.body
 
-    const user = await UserModel.findOne({ email })
-    if (!user) {
-        return res.status(400).json({ message: "user not found" })
-    }
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if (!isPasswordValid) {
-        return res.status(400).json({ message: "invalid password" })
-    }
-    const token = jwt.sign(
-        { id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-    )
-
-
-    res.cookie("token", token)
-    res.status(200).json({
-        message: "user logged in successfully",
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
+        const user = await UserModel.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ message: "user not found" })
         }
-    })
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: "invalid password" })
+        }
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        )
 
-
+        res.cookie("token", token)
+        res.status(200).json({
+            message: "user logged in successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        })
+    } catch (error) {
+        console.error("Login error:", error)
+        res.status(500).json({ message: "Internal server error", error: error.message })
+    }
 }
 
 async function logoutUserController(req, res) {
